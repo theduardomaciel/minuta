@@ -1,45 +1,81 @@
-/**
- * Learn more about Light and Dark modes:
- * https://docs.expo.io/guides/color-schemes/
- */
+import { Text as DefaultText, View as DefaultView } from "react-native";
+import {
+	RectButton as DefaultRectButton,
+	ScrollView as DefaultScrollView,
+} from "react-native-gesture-handler";
 
-import { Text as DefaultText, View as DefaultView } from 'react-native';
+import { cssInterop } from "nativewind";
+import { cn } from "@/libs/utils";
 
-import Colors from '@/constants/Colors';
-import { useColorScheme } from './useColorScheme';
+export function Container({ className, ...rest }: DefaultView["props"]) {
+	return (
+		<DefaultView
+			className={cn(
+				"flex flex-col items-center justify-center rounded-2xl bg-200 border border-100",
+				className
+			)}
+			{...rest}
+		/>
+	);
+}
 
-type ThemeProps = {
-  lightColor?: string;
-  darkColor?: string;
+export function Text({ className, ...rest }: DefaultText["props"]) {
+	return (
+		<DefaultText
+			className={cn(
+				"text-base font-sans text-neutral web:select-text",
+				className
+			)}
+			{...rest}
+		/>
+	);
+}
+
+type RectButtonProps = DefaultRectButton["props"] & {
+	className?: string;
 };
 
-export type TextProps = ThemeProps & DefaultText['props'];
-export type ViewProps = ThemeProps & DefaultView['props'];
-
-export function useThemeColor(
-  props: { light?: string; dark?: string },
-  colorName: keyof typeof Colors.light & keyof typeof Colors.dark
-) {
-  const theme = useColorScheme() ?? 'light';
-  const colorFromProps = props[theme];
-
-  if (colorFromProps) {
-    return colorFromProps;
-  } else {
-    return Colors[theme][colorName];
-  }
+function TypedRectButton(props: RectButtonProps) {
+	return <DefaultRectButton {...props} />;
 }
 
-export function Text(props: TextProps) {
-  const { style, lightColor, darkColor, ...otherProps } = props;
-  const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
+cssInterop(TypedRectButton, {
+	className: {
+		target: "style",
+	},
+});
 
-  return <DefaultText style={[{ color }, style]} {...otherProps} />;
+export function RectButton({ className, ...rest }: RectButtonProps) {
+	return (
+		<TypedRectButton
+			className={cn(
+				"flex flex-row items-center justify-center bg-200 hover:bg-300 web:transition-colors",
+				className
+			)}
+			{...rest}
+		/>
+	);
 }
 
-export function View(props: ViewProps) {
-  const { style, lightColor, darkColor, ...otherProps } = props;
-  const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
+type ScrollViewProps = DefaultScrollView["props"] & {
+	className?: string;
+};
 
-  return <DefaultView style={[{ backgroundColor }, style]} {...otherProps} />;
+function TypedScrollView(props: ScrollViewProps) {
+	return <DefaultScrollView {...props} />;
+}
+
+cssInterop(TypedScrollView, {
+	className: {
+		target: "style",
+	},
+});
+
+export function ScrollView({ className, ...rest }: ScrollViewProps) {
+	return (
+		<TypedScrollView
+			className={cn("portrait:w-full", className)}
+			{...rest}
+		/>
+	);
 }

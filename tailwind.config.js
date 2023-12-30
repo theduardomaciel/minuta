@@ -19,7 +19,8 @@ module.exports = {
 				100: "#6B6B6B",
 			},
 			fontFamily: {
-				sans: ["SpaceMono"],
+				sans: ["Inter"],
+				serif: ["SpaceMono"],
 			},
 			backgroundColor: {
 				100: "rgb(var(--background-01) / <alpha-value>)",

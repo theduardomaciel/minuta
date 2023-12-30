@@ -4,8 +4,10 @@ import {
 	ScrollView as DefaultScrollView,
 } from "react-native-gesture-handler";
 
-import { cssInterop } from "nativewind";
+import colors from "@/constants/colors";
+
 import { cn } from "@/libs/utils";
+import { cssInterop } from "nativewind";
 
 export function Container({ className, ...rest }: DefaultView["props"]) {
 	return (
@@ -33,6 +35,7 @@ export function Text({ className, ...rest }: DefaultText["props"]) {
 
 type RectButtonProps = DefaultRectButton["props"] & {
 	className?: string;
+	hasIcon?: boolean;
 };
 
 function TypedRectButton(props: RectButtonProps) {
@@ -45,13 +48,19 @@ cssInterop(TypedRectButton, {
 	},
 });
 
-export function RectButton({ className, ...rest }: RectButtonProps) {
+export function RectButton({ className, hasIcon, ...rest }: RectButtonProps) {
 	return (
 		<TypedRectButton
 			className={cn(
-				"flex flex-row items-center justify-center bg-200 hover:bg-300 web:transition-colors",
+				"bg-200 hover:bg-300 web:transition-colors",
+				{
+					"flex flex-row items-center justify-center": hasIcon,
+				},
 				className
 			)}
+			underlayColor={
+				rest.underlayColor || `rgb(${colors.dark.background[300]})`
+			}
 			{...rest}
 		/>
 	);

@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { View } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 
+import { cn } from "@/libs/utils";
 import colors from "@/constants/colors";
 
 // Components
@@ -11,9 +13,10 @@ import PostPreview from "@/components/PostPreview";
 
 // Assets
 import AddIcon from "@/assets/icons/add.svg";
-import TimelineDotSvg from "@/assets/timeline-dot.svg";
+import TimelineDot from "@/assets/timeline-dot.svg";
 
 interface Post {
+	index: number;
 	preview: string;
 	id: string;
 }
@@ -21,46 +24,53 @@ interface Post {
 const DAY_MARGIN = 16;
 
 const DATA: (string | Post)[] = [
-	"2023-05-05",
+	"//2023-05-05",
 	{
+		index: 1,
 		preview:
 			"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec auctor, nisl eget ultricies ultrices, nunc nisl ultricies nisi, vitae ultricies nisl nisl eget nisl. Donec auctor, nisl eget ultricies ultrices, nunc nisl ultricies nisi, vitae ultricies nisl nisl eget nisl.",
 		id: "18237",
 	},
 	{
+		index: 2,
 		preview:
 			"e o tempo voou. sem olhar para trás.\narrancando tudo que via na frente.\nfoi brutal.\nfoi cruel.\nfoi necessário.\nfoi o que foi.\ne o que foi, foi.",
 		id: "5312",
 	},
 	"2023-05-12",
 	{
+		index: 3,
 		preview: "o tempo passa. as folhas voam.",
 		id: "5124",
 	},
-	"2022-05-12",
+	"//2022-05-12",
 	{
+		index: 4,
 		preview: "o tempo passa. as folhas voam.",
 		id: "5124",
 	},
 ];
 
+const DATA_LENGTH = DATA.filter((i) => typeof i !== "string").length;
+
 export default function ProfileScreen() {
+	const [hasLoaded, setHasLoaded] = useState(false);
+
 	return (
-		<SafeAreaView className="flex flex-1 items-center justify-start">
+		<SafeAreaView className="flex web:h-screen web:w-[60vw] items-center justify-start">
 			<ScrollView
 				showsVerticalScrollIndicator={false}
-				className="landscape:w-[60%]"
+				className="web:w-full"
 				contentContainerStyle={{
-					width: "100%",
 					padding: 36,
-					gap: 50,
+					gap: 48,
 				}}
 			>
 				{/* Header */}
 				<View className="flex flex-col w-full items-center justify-start gap-4">
 					<Container className={"w-full gap-9 p-9"}>
 						<Text className="text-lg">@meninocoiso</Text>
-						<View className="flex landscape:grid grid-cols-3 flex-col landscape:flex-row items-start justify-center gap-4 w-full">
+						<View className="flex landscape:web:grid web:grid-cols-3 flex-col landscape:flex-row items-start justify-center gap-4 w-full">
 							<Text className="portrait:text-left landscape:text-center">
 								255 posts
 							</Text>
@@ -77,41 +87,79 @@ export default function ProfileScreen() {
 							<Text>Rascunhos</Text>
 						</RectButton>
 						<View className="portrait:w-full portrait:h-[1px] landscape:w-[1px] landscape:h-full bg-border" />
-						<RectButton className="flex-1 w-full py-4 gap-4">
+						<RectButton
+							className="flex-1 w-full py-4 gap-4"
+							hasIcon
+						>
 							<AddIcon color={`rgb(${colors.dark.neutral})`} />
 							<Text>Novo rascunho</Text>
 						</RectButton>
 					</Container>
 				</View>
-				<View className="flex flex-row w-full items-start justify-between gap-4">
-					<View className="flex flex-row items-start justify-start relative h-full">
-						<TimelineDot year={2023} />
-						<View className="flex h-full w-[6px] absolute top-[14.5px] right-[14.5px] bg-border" />
+				<View className="flex flex-row items-start justify-between gap-4 relative">
+					<View className="flex flex-row items-start justify-start h-full absolute top-0 left-0">
+						<TimelineYear year={2023} className="opacity-0" />
+						<View className="flex h-[110%] w-[6px] absolute top-[14.5px] right-[14.5px] bg-border" />
 					</View>
 					<FlashList
 						data={DATA}
-						renderItem={({ item }) => {
+						onLoad={() => setHasLoaded(true)}
+						renderItem={({ item, index }) => {
 							if (typeof item === "string") {
-								const dateString = new Date(
-									item
-								).toLocaleDateString("pt-BR", {
-									year: "numeric",
-									month: "long",
-									day: "numeric",
-								});
+								const isNewYear = item.includes("//");
+								const itemDate = isNewYear
+									? item.split("//")[1]
+									: item;
+
+								const date = new Date(itemDate);
+								const dateString = date.toLocaleDateString(
+									"pt-BR",
+									{
+										month: "long",
+										day: "numeric",
+									}
+								);
 
 								return (
-									<Text
-										className="text-base"
+									<View
+										className="flex flex-row items-center justify-between gap-8"
 										style={{
-											marginBottom: DAY_MARGIN,
+											marginTop:
+												isNewYear && index !== 0
+													? DAY_MARGIN * 2
+													: 0,
 										}}
 									>
-										{dateString}
-									</Text>
+										<TimelineYear
+											className={cn({
+												"opacity-0": !isNewYear,
+											})}
+											year={date.getFullYear()}
+										/>
+										<Text
+											className="text-base flex-1"
+											style={{
+												marginBottom: DAY_MARGIN,
+												marginLeft: "auto",
+											}}
+										>
+											{dateString}
+										</Text>
+									</View>
 								);
 							} else {
-								return <PostPreview {...item} />;
+								return (
+									<View className="flex flex-row items-center justify-between gap-8">
+										<TimelineYear
+											year={1234}
+											className="opacity-0"
+										/>
+										<PostPreview
+											isLast={item.index === DATA_LENGTH}
+											{...item}
+										/>
+									</View>
+								);
 							}
 						}}
 						getItemType={(item) => {
@@ -120,7 +168,7 @@ export default function ProfileScreen() {
 								? "sectionHeader"
 								: "row";
 						}}
-						estimatedItemSize={200}
+						estimatedItemSize={245.7}
 					/>
 				</View>
 			</ScrollView>
@@ -129,11 +177,22 @@ export default function ProfileScreen() {
 	);
 }
 
-function TimelineDot({ year }: { year: number }) {
+function TimelineYear({
+	year,
+	className,
+}: {
+	year: number;
+	className?: string;
+}) {
 	return (
-		<View className="flex flex-row items-center justify-center gap-3">
+		<View
+			className={cn(
+				"flex flex-row items-center justify-start gap-3",
+				className
+			)}
+		>
 			<Text>{year}</Text>
-			<TimelineDotSvg />
+			<TimelineDot />
 		</View>
 	);
 }

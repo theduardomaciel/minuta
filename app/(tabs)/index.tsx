@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { View } from "react-native";
+import { Platform, View } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
+
+import Head from "expo-router/head";
 
 import { cn } from "@/libs/utils";
 import colors from "@/constants/colors";
@@ -14,6 +16,7 @@ import PostPreview from "@/components/PostPreview";
 // Assets
 import AddIcon from "@/assets/icons/add.svg";
 import TimelineDot from "@/assets/timeline-dot.svg";
+import { LinearGradient } from "expo-linear-gradient";
 
 interface Post {
 	index: number;
@@ -53,127 +56,160 @@ const DATA: (string | Post)[] = [
 
 const DATA_LENGTH = DATA.filter((i) => typeof i !== "string").length;
 
+function MobileWrapper({ children }: { children: React.ReactNode }) {
+	return (
+		<LinearGradient
+			colors={[
+				`rgb(${colors.dark.background[100]})`,
+				`rgb(${colors.dark.background[300]})`,
+			]}
+		>
+			{children}
+		</LinearGradient>
+	);
+}
+
+function WebWrapper({ children }: { children: React.ReactNode }) {
+	return <>{children}</>;
+}
+
 export default function ProfileScreen() {
 	const [hasLoaded, setHasLoaded] = useState(false);
 
+	const ScrollViewWrapper =
+		Platform.OS === "web" ? WebWrapper : MobileWrapper;
+
 	return (
-		<SafeAreaView className="flex web:h-screen web:w-[60vw] items-center justify-start">
-			<ScrollView
-				showsVerticalScrollIndicator={false}
-				className="web:w-full"
-				contentContainerStyle={{
-					padding: 36,
-					gap: 48,
-				}}
-			>
-				{/* Header */}
-				<View className="flex flex-col w-full items-center justify-start gap-4">
-					<Container className={"w-full gap-9 p-9"}>
-						<Text className="text-lg">@meninocoiso</Text>
-						<View className="flex landscape:web:grid web:grid-cols-3 flex-col landscape:flex-row items-start justify-center gap-4 w-full">
-							<Text className="portrait:text-left landscape:text-center">
-								255 posts
-							</Text>
-							<Text className="portrait:text-left landscape:text-center">
-								49.124 palavras
-							</Text>
-							<Text className="portrait:text-left landscape:text-center">
-								desde junho de 2023
-							</Text>
-						</View>
-					</Container>
-					<Container className="w-full landscape:flex-row overflow-hidden">
-						<RectButton className="flex-1 w-full items-center justify-center py-4">
-							<Text>Rascunhos</Text>
-						</RectButton>
-						<View className="portrait:w-full portrait:h-[1px] landscape:w-[1px] landscape:h-full bg-border" />
-						<RectButton
-							className="flex-1 w-full py-4 gap-4"
-							hasIcon
-						>
-							<AddIcon color={`rgb(${colors.dark.neutral})`} />
-							<Text>Novo rascunho</Text>
-						</RectButton>
-					</Container>
-				</View>
-				<View className="flex flex-row items-start justify-between gap-4 relative">
-					<View className="flex flex-row items-start justify-start h-full absolute top-0 left-0">
-						<TimelineYear year={2023} className="opacity-0" />
-						<View className="flex h-[110%] w-[6px] absolute top-[14.5px] right-[14.5px] bg-border" />
+		<ScrollViewWrapper>
+			<SafeAreaView className="flex web:h-screen web:w-[60vw] items-center justify-start">
+				<Head>
+					<title>Seus pensamentos</title>
+					<meta
+						name="description"
+						content="This is the profile page, where you can see your thoughts and write more."
+					/>
+				</Head>
+				<ScrollView
+					showsVerticalScrollIndicator={false}
+					className="web:w-full"
+					contentContainerStyle={{
+						padding: 36,
+						gap: 48,
+					}}
+				>
+					{/* Header */}
+					<View className="flex flex-col w-full items-center justify-start gap-4">
+						<Container className={"w-full gap-9 p-9"}>
+							<Text className="text-lg">@meninocoiso</Text>
+							<View className="flex landscape:web:grid web:grid-cols-3 flex-col landscape:flex-row items-start justify-center gap-4 w-full">
+								<Text className="portrait:text-left landscape:text-center">
+									255 posts
+								</Text>
+								<Text className="portrait:text-left landscape:text-center">
+									49.124 palavras
+								</Text>
+								<Text className="portrait:text-left landscape:text-center">
+									desde junho de 2023
+								</Text>
+							</View>
+						</Container>
+						<Container className="w-full landscape:flex-row overflow-hidden">
+							<RectButton className="flex-1 w-full items-center justify-center py-4 landscape:web:py-3">
+								<Text>Rascunhos</Text>
+							</RectButton>
+							<View className="portrait:w-full portrait:h-[1px] landscape:w-[1px] landscape:h-full bg-border" />
+							<RectButton
+								className="flex-1 w-full gap-4 py-4 landscape:web:py-3"
+								hasIcon
+							>
+								<AddIcon
+									color={`rgb(${colors.dark.neutral})`}
+								/>
+								<Text>Novo rascunho</Text>
+							</RectButton>
+						</Container>
 					</View>
-					<FlashList
-						data={DATA}
-						onLoad={() => setHasLoaded(true)}
-						renderItem={({ item, index }) => {
-							if (typeof item === "string") {
-								const isNewYear = item.includes("//");
-								const itemDate = isNewYear
-									? item.split("//")[1]
-									: item;
+					<View className="flex flex-row items-start justify-between gap-4 relative min-h-4">
+						<View className="flex flex-row items-start justify-start h-full absolute top-0 left-0">
+							<TimelineYear year={2023} className="opacity-0" />
+							<View className="flex h-[110%] w-[6px] absolute top-[14.5px] right-[14.5px] bg-border" />
+						</View>
+						<FlashList
+							data={DATA}
+							onLoad={() => setHasLoaded(true)}
+							renderItem={({ item, index }) => {
+								if (typeof item === "string") {
+									const isNewYear = item.includes("//");
+									const itemDate = isNewYear
+										? item.split("//")[1]
+										: item;
 
-								const date = new Date(itemDate);
-								const dateString = date.toLocaleDateString(
-									"pt-BR",
-									{
-										month: "long",
-										day: "numeric",
-									}
-								);
+									const date = new Date(itemDate);
+									const dateString = date.toLocaleDateString(
+										"pt-BR",
+										{
+											month: "long",
+											day: "numeric",
+										}
+									);
 
-								return (
-									<View
-										className="flex flex-row items-center justify-between gap-8"
-										style={{
-											marginTop:
-												isNewYear && index !== 0
-													? DAY_MARGIN * 2
-													: 0,
-										}}
-									>
-										<TimelineYear
-											className={cn({
-												"opacity-0": !isNewYear,
-											})}
-											year={date.getFullYear()}
-										/>
-										<Text
-											className="text-base flex-1"
+									return (
+										<View
+											className="flex flex-row items-center justify-between gap-8"
 											style={{
-												marginBottom: DAY_MARGIN,
-												marginLeft: "auto",
+												marginTop:
+													isNewYear && index !== 0
+														? DAY_MARGIN * 2
+														: 0,
 											}}
 										>
-											{dateString}
-										</Text>
-									</View>
-								);
-							} else {
-								return (
-									<View className="flex flex-row items-center justify-between gap-8">
-										<TimelineYear
-											year={1234}
-											className="opacity-0"
-										/>
-										<PostPreview
-											isLast={item.index === DATA_LENGTH}
-											{...item}
-										/>
-									</View>
-								);
-							}
-						}}
-						getItemType={(item) => {
-							// To achieve better performance, specify the type based on the item
-							return typeof item === "string"
-								? "sectionHeader"
-								: "row";
-						}}
-						estimatedItemSize={245.7}
-					/>
-				</View>
-			</ScrollView>
-			<StatusBar style="light" />
-		</SafeAreaView>
+											<TimelineYear
+												className={cn({
+													"opacity-0": !isNewYear,
+												})}
+												year={date.getFullYear()}
+											/>
+											<Text
+												className="text-base flex-1"
+												style={{
+													marginBottom: DAY_MARGIN,
+													marginLeft: "auto",
+												}}
+											>
+												{dateString}
+											</Text>
+										</View>
+									);
+								} else {
+									return (
+										<View className="flex flex-row items-center justify-between gap-8">
+											<TimelineYear
+												year={1234}
+												className="opacity-0"
+											/>
+											<PostPreview
+												isLast={
+													item.index === DATA_LENGTH
+												}
+												{...item}
+											/>
+										</View>
+									);
+								}
+							}}
+							getItemType={(item) => {
+								// To achieve better performance, specify the type based on the item
+								return typeof item === "string"
+									? "sectionHeader"
+									: "row";
+							}}
+							estimatedItemSize={245.7}
+						/>
+					</View>
+				</ScrollView>
+				<StatusBar style="light" />
+			</SafeAreaView>
+		</ScrollViewWrapper>
 	);
 }
 

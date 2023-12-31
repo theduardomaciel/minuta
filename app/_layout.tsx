@@ -61,25 +61,13 @@ function RootLayoutNav() {
 			value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
 		>
 			<GestureHandlerRootView style={{ flex: 1 }}>
-				<Stack
-					screenOptions={{
-						contentStyle:
-							Platform.OS === "web"
-								? {
-										backgroundColor:
-											"radial-gradient(50% 50% at 50% 50%, #060308 0%, #020103 100%)",
-								  }
-								: {
-										backgroundColor: `rgb(${colors.dark.background[100]})`,
-								  },
-					}}
-				>
+				<Stack>
 					<Stack.Screen
 						name="(tabs)"
 						options={{ headerShown: false }}
 					/>
 					<Stack.Screen
-						name="modal"
+						name="think"
 						options={{ presentation: "modal" }}
 					/>
 				</Stack>

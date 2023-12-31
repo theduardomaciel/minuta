@@ -15,7 +15,8 @@ export default {
 		neutral: "255 255 255",
 		border: "107 107 107",
 		primary: {
-			100: "10 1 15",
+			100: "24 3 37",
+			200: "10 1 15",
 		},
 		background: {
 			100: "6 3 8",

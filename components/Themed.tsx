@@ -1,4 +1,8 @@
-import { Text as DefaultText, View as DefaultView } from "react-native";
+import {
+	Text as DefaultText,
+	View as DefaultView,
+	Platform,
+} from "react-native";
 import {
 	RectButton as DefaultRectButton,
 	ScrollView as DefaultScrollView,
@@ -8,12 +12,15 @@ import colors from "@/constants/colors";
 
 import { cn } from "@/libs/utils";
 import { cssInterop } from "nativewind";
+import { forwardRef } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export function Container({ className, ...rest }: DefaultView["props"]) {
 	return (
 		<DefaultView
+			data-glow
 			className={cn(
-				"flex flex-col items-center justify-center rounded-2xl bg-200 border border-100",
+				"flex items-center justify-center rounded-2xl bg-200 border border-default",
 				className
 			)}
 			{...rest}
@@ -48,23 +55,27 @@ cssInterop(TypedRectButton, {
 	},
 });
 
-export function RectButton({ className, hasIcon, ...rest }: RectButtonProps) {
-	return (
-		<TypedRectButton
-			className={cn(
-				"bg-200 hover:bg-300 web:transition-colors",
-				{
-					"flex flex-row items-center justify-center": hasIcon,
-				},
-				className
-			)}
-			underlayColor={
-				rest.underlayColor || `rgb(${colors.dark.background[300]})`
-			}
-			{...rest}
-		/>
-	);
-}
+const RectButton = forwardRef(
+	({ className, hasIcon, ...rest }: RectButtonProps, ref) => {
+		return (
+			<TypedRectButton
+				className={cn(
+					"bg-200 hover:bg-300 web:transition-colors overflow-hidden",
+					{
+						"flex flex-row items-center justify-center": hasIcon,
+					},
+					className
+				)}
+				underlayColor={
+					rest.underlayColor || `rgb(${colors.dark.background[300]})`
+				}
+				{...rest}
+			/>
+		);
+	}
+);
+
+export { RectButton };
 
 type ScrollViewProps = DefaultScrollView["props"] & {
 	className?: string;
@@ -88,3 +99,43 @@ export function ScrollView({ className, ...rest }: ScrollViewProps) {
 		/>
 	);
 }
+
+export function Wrapper({
+	className,
+	contentContainerStyle,
+	...rest
+}: ScrollViewProps & { contentContainerClassName?: string }) {
+	return (
+		<ScrollView
+			showsVerticalScrollIndicator={false}
+			className={cn("web:md:w-[60vw]", className)}
+			contentContainerStyle={[
+				{ padding: 36, gap: 48 },
+				contentContainerStyle,
+			]}
+			{...rest}
+		/>
+	);
+}
+
+type SafeAreaViewProps = DefaultView["props"] & {
+	className?: string;
+};
+
+export function DefaultSafeAreaView({ className, ...rest }: SafeAreaViewProps) {
+	return (
+		<SafeAreaView
+			className={cn(
+				"flex web:h-screen items-center justify-start",
+				className
+			)}
+			{...rest}
+		/>
+	);
+}
+
+cssInterop(DefaultSafeAreaView, {
+	className: {
+		target: "style",
+	},
+});

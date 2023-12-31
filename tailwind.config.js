@@ -14,9 +14,10 @@ module.exports = {
 			colors: {
 				neutral: "rgb(var(--neutral) / <alpha-value>)",
 				primary: "rgb(var(--primary-100) / <alpha-value>)",
+				secondary: "rgb(var(--primary-200) / <alpha-value>)",
 			},
 			borderColor: {
-				100: "#6B6B6B",
+				default: "#6B6B6B",
 			},
 			fontFamily: {
 				sans: ["Inter"],
@@ -36,6 +37,7 @@ module.exports = {
 				":root": {
 					"--neutral": colors.dark.neutral,
 					"--primary-100": colors.dark.primary[100],
+					"--primary-200": colors.dark.primary[200],
 					"--background-01": colors.dark.background[100],
 					"--background-02": colors.dark.background[200],
 					"--background-03": colors.dark.background[300],

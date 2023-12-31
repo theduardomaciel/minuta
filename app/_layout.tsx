@@ -13,7 +13,6 @@ import * as SplashScreen from "expo-splash-screen";
 
 import "../global.css";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { Platform } from "react-native";
 import colors from "@/constants/colors";
 
 export {
@@ -60,15 +59,26 @@ function RootLayoutNav() {
 		<ThemeProvider
 			value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
 		>
-			<GestureHandlerRootView style={{ flex: 1 }}>
-				<Stack>
+			<GestureHandlerRootView
+				style={{
+					flex: 1,
+					backgroundColor: `rgb(${colors.dark.background[100]})`, // TODO: Bugadasso. Não funciona se o valor for `transparent`.
+				}}
+			>
+				<Stack
+					screenOptions={{
+						contentStyle: {
+							backgroundColor: "red",
+						},
+					}}
+				>
 					<Stack.Screen
 						name="(tabs)"
 						options={{ headerShown: false }}
 					/>
 					<Stack.Screen
 						name="think"
-						options={{ presentation: "modal" }}
+						options={{ presentation: "modal", headerShown: false }}
 					/>
 				</Stack>
 			</GestureHandlerRootView>

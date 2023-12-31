@@ -1,6 +1,11 @@
 import React from "react";
 
-import { Platform, TouchableOpacity, View } from "react-native";
+import {
+	Platform,
+	TouchableOpacity,
+	View,
+	useWindowDimensions,
+} from "react-native";
 import { Link, Slot, Tabs } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -15,9 +20,6 @@ const ICONS = {
 	home: HomeIcon,
 	settings: SettingsIcon,
 };
-
-// Types
-import type { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 
 function SidebarButton({
 	name,
@@ -86,7 +88,9 @@ function WebSidebar() {
 }
 
 export default function Layout() {
-	if (Platform.OS === "web") {
+	const { width } = useWindowDimensions();
+
+	if (Platform.OS === "web" && width >= 768) {
 		return (
 			<div
 				className="flex h-screen flex-row items-start justify-center gap-28 relative"
@@ -109,8 +113,16 @@ export default function Layout() {
 			sceneContainerStyle={{
 				backgroundColor: `rgb(${colors.dark.background[100]})`,
 			}}
-			tabBar={(props) => <CustomTabBar {...props} />}
 			screenOptions={{
+				tabBarActiveTintColor: "#FFFFFF",
+				tabBarInactiveTintColor: "rgba(255, 255, 255, 0.5)",
+				tabBarShowLabel: false,
+				tabBarStyle: {
+					backgroundColor: `rgb(${colors.dark.background[200]})`,
+					borderTopWidth: 1,
+					borderTopColor: `rgb(${colors.dark.border})`,
+					height: 65,
+				},
 				headerShown: false,
 			}}
 		>
@@ -131,70 +143,5 @@ export default function Layout() {
 				}}
 			/>
 		</Tabs>
-	);
-}
-
-function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
-	return (
-		<View
-			className={
-				"flex flex-row items-center justify-around w-full h-20 bg-200"
-			}
-		>
-			<LinearGradient
-				colors={[
-					"rgba(107, 107, 107, 0)",
-					"rgba(107, 107, 107, 1)",
-					"rgba(107, 107, 107, 0)",
-				]}
-				className={"absolute top-0 portrait:left-0 w-full h-[1px]"}
-			/>
-			{state.routes.map((route, index) => {
-				const { options } = descriptors[route.key];
-				const isFocused = state.index === index;
-
-				const onPress = () => {
-					const event = navigation.emit({
-						type: "tabPress",
-						target: route.key,
-						canPreventDefault: true,
-					});
-
-					if (!isFocused && !event.defaultPrevented) {
-						navigation.navigate(route.name, route.params);
-					}
-				};
-
-				const onLongPress = () => {
-					navigation.emit({
-						type: "tabLongPress",
-						target: route.key,
-					});
-				};
-
-				return (
-					<TouchableOpacity
-						key={route.key}
-						accessibilityRole="button"
-						accessibilityState={isFocused ? { selected: true } : {}}
-						accessibilityLabel={options.tabBarAccessibilityLabel}
-						testID={options.tabBarTestID}
-						onPress={onPress}
-						onLongPress={onLongPress}
-						activeOpacity={1}
-						className="flex-1 items-center justify-center h-full"
-					>
-						{options.tabBarIcon &&
-							options.tabBarIcon({
-								color: isFocused
-									? `#FFFFFF`
-									: `rgba(255, 255, 255, 0.5)`,
-								size: 36,
-								focused: isFocused,
-							})}
-					</TouchableOpacity>
-				);
-			})}
-		</View>
 	);
 }

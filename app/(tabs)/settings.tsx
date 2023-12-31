@@ -3,16 +3,16 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import Head from "expo-router/head";
 
-import { Text } from "@/components/Themed";
+import {
+	Container,
+	DefaultSafeAreaView,
+	Text,
+	Wrapper,
+} from "@/components/Themed";
 
-export default function TabOneScreen() {
+export default function SettingsScreen() {
 	return (
-		<SafeAreaView
-			className="flex web:h-screen web:w-[60vw] items-start justify-start gap-12"
-			style={{
-				padding: 36, // Precisa ser na propriedade style, não pode ser no className por conta do SafeAreaView
-			}}
-		>
+		<DefaultSafeAreaView>
 			<Head>
 				<title>Configurações</title>
 				<meta
@@ -20,7 +20,13 @@ export default function TabOneScreen() {
 					content="This is the settings page, where you can see adequate your experience."
 				/>
 			</Head>
-			<Text className="font-black text-5xl">Configurações</Text>
-		</SafeAreaView>
+			<Wrapper>
+				<Text className="font-black text-5xl">Configurações</Text>
+
+				<Container data-glow className="container h-48 w-full">
+					<Text>Configurações</Text>
+				</Container>
+			</Wrapper>
+		</DefaultSafeAreaView>
 	);
 }

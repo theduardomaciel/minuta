@@ -42,7 +42,6 @@ export function Text({ className, ...rest }: DefaultText["props"]) {
 
 type RectButtonProps = DefaultRectButton["props"] & {
 	className?: string;
-	hasIcon?: boolean;
 };
 
 function TypedRectButton(props: RectButtonProps) {
@@ -56,14 +55,11 @@ cssInterop(TypedRectButton, {
 });
 
 const RectButton = forwardRef(
-	({ className, hasIcon, ...rest }: RectButtonProps, ref) => {
+	({ className, ...rest }: RectButtonProps, ref) => {
 		return (
 			<TypedRectButton
 				className={cn(
-					"bg-200 hover:bg-300 web:transition-colors overflow-hidden",
-					{
-						"flex flex-row items-center justify-center": hasIcon,
-					},
+					"flex flex-row items-center justify-center bg-200 hover:bg-300 web:transition-colors overflow-hidden",
 					className
 				)}
 				underlayColor={

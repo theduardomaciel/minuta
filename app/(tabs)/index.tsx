@@ -116,10 +116,7 @@ export default function ProfileScreen() {
 						</RectButton>
 						<View className="portrait:w-full portrait:h-[1px] landscape:w-[1px] landscape:h-full bg-border" />
 						<Link href="/think" asChild>
-							<RectButton
-								className="flex-1 w-full gap-4 py-4 landscape:web:py-3"
-								hasIcon
-							>
+							<RectButton className="flex-1 w-full gap-4 py-4 landscape:web:py-3">
 								<AddIcon
 									color={`rgb(${colors.dark.neutral})`}
 								/>

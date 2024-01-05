@@ -68,7 +68,7 @@ function RootLayoutNav() {
 				<Stack
 					screenOptions={{
 						contentStyle: {
-							backgroundColor: "red",
+							backgroundColor: "transparent",
 						},
 					}}
 				>

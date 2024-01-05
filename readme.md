@@ -2,11 +2,15 @@
     [???]
 </h1>
 
+<br />
+
 ## 💻 Projeto
 
-Uma plataforma de depósito de pensamentos. Seja você mesmo. Expresse seus sentimentos. Lembre-se.
+Uma plataforma de depósito de pensamentos. Seja você mesmo. Expresse seus sentimentos. Eternize.
 
 #### 🧭 Disponível em breve para Web, Android e iOS.
+
+<br />
 
 ## ✨ Tecnologias
 
@@ -18,11 +22,15 @@ Uma plataforma de depósito de pensamentos. Seja você mesmo. Expresse seus sent
 > [!WARNING]
 > O projeto ainda encontra-se em desenvolvimento, portanto, diversos aspectos estarão inacabados e/ou não funcionais, à medida que a aplicação torna-se mais robusta.
 
+<br />
+
 ## 🧠 Princípios
 
 1.  Ser totalmente acessível **sem conexão à internet** (offline), seguindo a arquitetura _offline first_.
 2.  Estar disponível em diversas plataformas, abrangendo a **Web** e **dispositivos móveis Android e iOS**.
 3.  Experimentar o uso de um **banco de dados não relacional** (NoSQL).
+
+<br />
 
 ## 🚧 Roadmap
 
@@ -33,6 +41,8 @@ Uma plataforma de depósito de pensamentos. Seja você mesmo. Expresse seus sent
 -   [x] Estudo das tecnologias disponíveis para a edição de `RichText`, tanto em plataformas móveis nativas (Android e iOS), quanto na Web.
 -   [ ] Implementação no código da inserção de pensamentos com o componente `RichText`
 -   [ ] Implementação no código do armazenamento de pensamentos escritos tanto localmente como remotamente.
+
+<br />
 
 ## 📝 Licença
 

@@ -39,7 +39,7 @@ export default function PostPreview({
 				style,
 			]}
 		>
-			<RectButton className="justify-start gap-4 p-6 w-full">
+			<RectButton className="flex-col justify-start gap-4 p-6 w-full">
 				<Text className="text-sm w-full">{TRUNCATED_TEXT}</Text>
 				<View className="flex flex-col landscape:flex-row w-full items-start justify-start landscape:justify-between gap-2">
 					{IS_TRUNCATED && (

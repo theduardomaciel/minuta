@@ -20,10 +20,11 @@ export default function ComposeScreen() {
 			</Head>
 			<View className="flex h-screen flex-col items-center justify-center gap-3 px-9 w-full landscape:web:xl:w-[45%] landscape:web:lg:w-[60%] min-h-[50vh] max-h-[75vh]">
 				<Editor />
-				<Link href={`/`} className="bg-red-300">
-					<Text className="flex opacity-70 text-base web:landscape:text-sm hover:underline -z-10">
-						escrevendo como @meninocoiso
-					</Text>
+				<Link
+					href={`/`}
+					className="flex opacity-70 text-base web:landscape:text-sm hover:underline -z-10 text-neutral"
+				>
+					escrevendo como @meninocoiso
 				</Link>
 			</View>
 			<StatusBar style="light" />

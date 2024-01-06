@@ -15,6 +15,7 @@
   "dependencies": {
     "@expo/match-media": "^0.4.0",
     "@expo/vector-icons": "14.0.0",
+    "@lexical/react": "^0.12.5",
     "@react-navigation/native": "^6.0.2",
     "@shopify/flash-list": "1.6.3",
     "clsx": "^2.0.0",
@@ -27,6 +28,7 @@
     "expo-status-bar": "~1.11.1",
     "expo-system-ui": "~2.9.2",
     "expo-web-browser": "~12.8.1",
+    "lexical": "^0.12.5",
     "nativewind": "canary",
     "react": "18.2.0",
     "react-dom": "18.2.0",

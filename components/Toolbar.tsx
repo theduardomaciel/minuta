@@ -46,7 +46,7 @@ function ToolbarButton({ icon: Icon, isToggled, onPress }: ToolbarButtonProps) {
 }
 
 interface Action {
-	type: "bold" | "italic" | "underline" | "strikeThrough" | "heading1";
+	type: "bold" | "italic" | "underline" | "strikeThrough";
 	payload: boolean;
 }
 

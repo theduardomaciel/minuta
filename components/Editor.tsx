@@ -77,46 +77,15 @@ export default function Editor() {
 		}); */
 	}, []);
 
-	const handleHome = useCallback(() => {
-		//navigation.push("index");
-	}, []);
-
 	// Handles editor data change
 	const handleChange = useCallback((html: string) => {
 		// Save html to content ref;
 		contentRef.current = html;
 	}, []);
 
-	// Handles editor height change
-	/* const handleHeightChange = useCallback((height: number) => {
-		console.log("Editor height change:", height);
-	}, []);
-
-	const editorInitializedCallback = useCallback(() => {
-		richText.current?.registerToolbar(function (items) {
-			console.log(
-				"Toolbar click, selected items (insert end callback):",
-				items
-			);
-		});
-	}, []);
-
-	const handlePaste = useCallback((data: any) => {
-		console.log("Paste:", data);
-	}, []);
-
-	const handleInput = useCallback(() => {}, []);
-
-	const handleFocus = useCallback(() => {
-		console.log("The editor has been focused.");
-	}, []);
-
-	const handleBlur = useCallback(() => {
-		console.log("The editor has been blurred.");
-	}, []); */
-
 	const handleCursorPosition = useCallback((scrollY: number) => {
 		// Positioning scroll bar
+		console.log("scrollY", scrollY);
 		scrollRef.current!.scrollTo({ y: scrollY - 30, animated: true });
 	}, []);
 
@@ -147,9 +116,9 @@ export default function Editor() {
 					initialContentHTML={initHTML}
 					onChange={handleChange}
 					/* onHeightChange={handleHeightChange}
-				onPaste={handlePaste} */
+					onPaste={handlePaste} */
 					/* onFocus={handleFocus}
-				onBlur={handleBlur} */
+					onBlur={handleBlur} */
 					onCursorPosition={handleCursorPosition}
 					pasteAsPlainText={true}
 				/>
@@ -158,3 +127,31 @@ export default function Editor() {
 		</ScrollView>
 	);
 }
+
+// Handles editor height change
+/* const handleHeightChange = useCallback((height: number) => {
+	console.log("Editor height change:", height);
+}, []);
+
+const editorInitializedCallback = useCallback(() => {
+	richText.current?.registerToolbar(function (items) {
+		console.log(
+			"Toolbar click, selected items (insert end callback):",
+			items
+		);
+	});
+}, []);
+
+const handlePaste = useCallback((data: any) => {
+	console.log("Paste:", data);
+}, []);
+
+const handleInput = useCallback(() => {}, []);
+
+const handleFocus = useCallback(() => {
+	console.log("The editor has been focused.");
+}, []);
+
+const handleBlur = useCallback(() => {
+	console.log("The editor has been blurred.");
+}, []); */

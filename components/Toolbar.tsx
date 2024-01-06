@@ -1,4 +1,4 @@
-import { type RefObject, useState, useEffect, useReducer } from "react";
+import { type RefObject } from "react";
 import { View } from "react-native";
 
 import { cn } from "@/libs/utils";
@@ -12,6 +12,7 @@ import UnderlineIcon from "@/assets/icons/editor/underline.svg";
 import StrikethroughIcon from "@/assets/icons/editor/strikethrough.svg";
 
 import PublishIcon from "@/assets/icons/publish.svg";
+import UndoIcon from "@/assets/icons/editor/undo.svg";
 
 // Components
 import { Container, RectButton, Text } from "@/components/Themed";
@@ -19,93 +20,40 @@ import { RichEditor, actions } from "react-native-pell-rich-editor";
 
 // Types
 import type { SvgProps } from "react-native-svg";
+import type { State } from "./Editor";
 
-interface ToolbarButtonProps {
-	icon: React.FC<SvgProps>;
-	isToggled: boolean;
-	onPress?: () => void;
+interface ToolbarProps {
+	editor: RefObject<RichEditor>;
+	state: State;
+	className?: string;
+	toolbarButtonClassName?: ToolbarButtonProps["className"];
 }
 
-function ToolbarButton({ icon: Icon, isToggled, onPress }: ToolbarButtonProps) {
+export default function Toolbar({
+	editor,
+	state,
+	className,
+	toolbarButtonClassName,
+}: ToolbarProps) {
 	return (
-		<RectButton className="overflow-hidden rounded-lg" onPress={onPress}>
-			<Container
-				className={cn("rounded-lg p-2 web:transition-colors", {
-					"bg-primary": isToggled,
-					"web:hover:bg-300": !isToggled,
-				})}
+		<View
+			className={cn(
+				"flex flex-row items-center justify-between flex-wrap w-full"
+			)}
+		>
+			<View
+				className={cn(
+					"flex flex-row items-center justify-start gap-3",
+					className
+				)}
 			>
-				<Icon
-					width={24}
-					height={24}
-					color={`rgb(${colors.dark.neutral})`}
-				/>
-			</Container>
-		</RectButton>
-	);
-}
-
-interface Action {
-	type: "bold" | "italic" | "underline" | "strikeThrough";
-	payload: boolean;
-}
-
-interface State {
-	bold: boolean;
-	italic: boolean;
-	underline: boolean;
-	strikeThrough: boolean;
-}
-
-const ICONS = {
-	bold: BoldIcon,
-	italic: ItalicIcon,
-	underline: UnderlineIcon,
-	strikeThrough: StrikethroughIcon,
-};
-
-function reducer(state: State, action: Action) {
-	return {
-		...state,
-		[action.type]: action.payload,
-	};
-}
-
-export default function Toolbar({ editor }: { editor: RefObject<RichEditor> }) {
-	const [state, dispatch] = useReducer(reducer, {
-		bold: false,
-		italic: false,
-		underline: false,
-		strikeThrough: false,
-	});
-
-	useEffect(() => {
-		editor.current?.registerToolbar(function (items) {
-			/* console.log(
-				"Toolbar click, selected items (insert end callback):",
-				items.filter((item) => Object.keys(ICONS).includes(item as any))
-			); */
-
-			Object.keys(ICONS).forEach((key) => {
-				dispatch({
-					type: key as any,
-					payload: items.includes(key),
-				});
-			});
-		});
-	}, []);
-
-	return (
-		/* Header */
-		<View className="flex flex-row items-center justify-between w-full">
-			{/* Toolbar */}
-			<View className="flex flex-row items-center justify-start gap-3 flex-wrap max-w-full">
 				{Object.entries(ICONS).map(([key, value]) => {
 					return (
 						<ToolbarButton
 							key={key}
 							icon={value}
 							isToggled={state[key as keyof typeof state]}
+							className={toolbarButtonClassName}
 							onPress={() => {
 								editor.current?.sendAction(
 									key, // exemple: "actions.setBold"
@@ -117,10 +65,78 @@ export default function Toolbar({ editor }: { editor: RefObject<RichEditor> }) {
 					);
 				})}
 			</View>
-			<PublishButton className="max-lg:hidden portrait:hidden" />
+			<View className="flex flex-row items-center justify-end">
+				<ToolbarButton
+					key={"undo"}
+					icon={UndoIcon}
+					className={cn(
+						"rounded-tr-none rounded-br-none",
+						toolbarButtonClassName
+					)}
+					onPress={() => {
+						editor.current?.sendAction("undo", "result", true);
+					}}
+				/>
+				<ToolbarButton
+					key={"redo"}
+					icon={UndoIcon}
+					iconProps={{ transform: [{ scaleX: -1 }] }}
+					className={cn(
+						"rounded-tl-none rounded-bl-none border-l-0",
+						toolbarButtonClassName
+					)}
+					onPress={() => {
+						editor.current?.sendAction("redo", "result", true);
+					}}
+				/>
+			</View>
 		</View>
 	);
 }
+
+interface ToolbarButtonProps {
+	icon: React.FC<SvgProps>;
+	iconProps?: SvgProps;
+	isToggled?: boolean;
+	className?: string;
+	onPress?: () => void;
+}
+
+function ToolbarButton({
+	icon: Icon,
+	iconProps,
+	className,
+	isToggled,
+	onPress,
+}: ToolbarButtonProps) {
+	return (
+		<RectButton
+			className={cn("overflow-hidden rounded-lg web:transition-colors", {
+				"bg-primary": isToggled,
+				"web:hover:bg-300": !isToggled,
+			})}
+			onPress={onPress}
+		>
+			<Container
+				className={cn("rounded-lg p-2.5 bg-transparent", className)}
+			>
+				<Icon
+					width={24}
+					height={24}
+					color={`rgb(${colors.dark.neutral})`}
+					{...iconProps}
+				/>
+			</Container>
+		</RectButton>
+	);
+}
+
+const ICONS = {
+	bold: BoldIcon,
+	italic: ItalicIcon,
+	underline: UnderlineIcon,
+	strikeThrough: StrikethroughIcon,
+};
 
 interface PublishButtonProps {
 	onPress?: () => void;

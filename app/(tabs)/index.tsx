@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { Platform, View } from "react-native";
+import { View } from "react-native";
+
 import { FlashList } from "@shopify/flash-list";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { StatusBar } from "expo-status-bar";
 
 import Head from "expo-router/head";
 import { Link } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 
 import { cn } from "@/libs/utils";
 import colors from "@/constants/colors";
@@ -15,7 +15,6 @@ import {
 	Container,
 	RectButton,
 	Text,
-	ScrollView,
 	Wrapper,
 	DefaultSafeAreaView,
 } from "@/components/Themed";

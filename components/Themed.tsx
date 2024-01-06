@@ -75,6 +75,7 @@ export { RectButton };
 
 type ScrollViewProps = DefaultScrollView["props"] & {
 	className?: string;
+	ref?: any;
 };
 
 function TypedScrollView(props: ScrollViewProps) {
@@ -96,23 +97,31 @@ export function ScrollView({ className, ...rest }: ScrollViewProps) {
 	);
 }
 
-export function Wrapper({
-	className,
-	contentContainerStyle,
-	...rest
-}: ScrollViewProps & { contentContainerClassName?: string }) {
-	return (
-		<ScrollView
-			showsVerticalScrollIndicator={false}
-			className={cn("web:md:w-[60vw]", className)}
-			contentContainerStyle={[
-				{ padding: 36, gap: 48 },
-				contentContainerStyle,
-			]}
-			{...rest}
-		/>
-	);
-}
+const Wrapper = forwardRef(
+	(
+		{
+			className,
+			contentContainerStyle,
+			...rest
+		}: ScrollViewProps & { contentContainerClassName?: string },
+		ref
+	) => {
+		return (
+			<ScrollView
+				ref={ref}
+				showsVerticalScrollIndicator={false}
+				className={cn("web:md:w-[60vw]", className)}
+				contentContainerStyle={[
+					{ padding: 36, gap: 48 },
+					contentContainerStyle,
+				]}
+				{...rest}
+			/>
+		);
+	}
+);
+
+export { Wrapper };
 
 type SafeAreaViewProps = DefaultView["props"] & {
 	className?: string;

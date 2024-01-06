@@ -8,7 +8,12 @@ import {
 
 export function RadialGradient() {
 	return (
-		<Svg className="absolute bottom-0 left-0 right-0 top-0 w-full h-full -z-10">
+		<Svg
+			className="absolute top-0 left-0 bottom-0 right-0 -z-10"
+			height="100%"
+			width="100%"
+			viewBox="0 0 1 1"
+		>
 			<Path
 				d="M0 0H375V279C375 283.418 371.418 287 367 287H8C3.58172 287 0 283.418 0 279V0Z"
 				fill="url(#grad)"

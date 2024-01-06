@@ -20,7 +20,7 @@ export function Container({ className, ...rest }: DefaultView["props"]) {
 		<DefaultView
 			data-glow
 			className={cn(
-				"flex items-center justify-center rounded-2xl bg-200 border border-default",
+				"flex items-center justify-center rounded-2xl bg-200/75 border border-default",
 				className
 			)}
 			{...rest}
@@ -59,7 +59,7 @@ const RectButton = forwardRef(
 		return (
 			<TypedRectButton
 				className={cn(
-					"flex flex-row items-center justify-center bg-200 hover:bg-300 web:transition-colors overflow-hidden",
+					"flex flex-row items-center justify-center bg-200/50 hover:bg-300 web:transition-colors overflow-hidden",
 					className
 				)}
 				underlayColor={

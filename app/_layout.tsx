@@ -3,6 +3,7 @@ import {
 	DefaultTheme,
 	ThemeProvider,
 } from "@react-navigation/native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import { useFonts } from "expo-font";
 import { useEffect } from "react";
@@ -12,8 +13,10 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 
 import "../global.css";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
+import "@expo/match-media";
+
 import colors from "@/constants/colors";
+import { Platform } from "react-native";
 
 export {
 	// Catch any errors thrown by the Layout component.
@@ -68,7 +71,10 @@ function RootLayoutNav() {
 				<Stack
 					screenOptions={{
 						contentStyle: {
-							backgroundColor: "transparent",
+							backgroundColor:
+								Platform.OS === "web"
+									? `rgb(${colors.dark.background[100]})`
+									: "transparent",
 						},
 					}}
 				>

@@ -1,13 +1,7 @@
 import React from "react";
 
-import {
-	Platform,
-	TouchableOpacity,
-	View,
-	useWindowDimensions,
-} from "react-native";
+import { Platform } from "react-native";
 import { Link, Slot, Tabs } from "expo-router";
-import { LinearGradient } from "expo-linear-gradient";
 
 import { cn } from "@/libs/utils";
 import colors from "@/constants/colors";
@@ -87,10 +81,14 @@ function WebSidebar() {
 	);
 }
 
-export default function Layout() {
-	const { width } = useWindowDimensions();
+import { useMediaQuery } from "react-responsive";
 
-	if (Platform.OS === "web" && width >= 768) {
+export default function Layout() {
+	const isMobile = useMediaQuery({
+		maxDeviceWidth: 767,
+	});
+
+	if (Platform.OS === "web" && !isMobile) {
 		return (
 			<div
 				className="flex h-screen flex-row items-start justify-center gap-28 relative"

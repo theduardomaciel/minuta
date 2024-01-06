@@ -13,11 +13,12 @@
     "preset": "jest-expo"
   },
   "dependencies": {
-    "@expo/vector-icons": "^13.0.0",
+    "@expo/match-media": "^0.4.0",
+    "@expo/vector-icons": "14.0.0",
     "@react-navigation/native": "^6.0.2",
     "@shopify/flash-list": "1.6.3",
     "clsx": "^2.0.0",
-    "expo": "~50.0.0-preview.7",
+    "expo": "^50.0.0-preview.8",
     "expo-font": "~11.10.0",
     "expo-linear-gradient": "~12.7.0",
     "expo-linking": "~6.2.1",
@@ -38,6 +39,7 @@
     "react-native-svg": "^14.1.0",
     "react-native-web": "~0.19.6",
     "react-native-webview": "^13.6.4",
+    "react-responsive": "^9.0.2",
     "tailwind-merge": "^2.2.0"
   },
   "devDependencies": {

@@ -213,7 +213,7 @@ export default function Editor() {
 					<Toolbar editor={richText} state={state} />
 					<PublishButton className="max-lg:hidden portrait:hidden" />
 				</View>
-				<Container className="w-full p-6 lg:p-12 min-h-[50vh] rounded-2xl flex-1">
+				<Container className="w-full p-6 lg:p-12 min-h-[55vh] rounded-2xl flex-1">
 					<RichEditor
 						ref={richText}
 						className="flex flex-1 w-full"

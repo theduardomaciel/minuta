@@ -1,5 +1,12 @@
-import { type RefObject } from "react";
-import { View } from "react-native";
+import { useCallback, type RefObject } from "react";
+import { Pressable, View } from "react-native";
+
+import Animated, {
+	useAnimatedStyle,
+	useSharedValue,
+	withSpring,
+	withTiming,
+} from "react-native-reanimated";
 
 import { cn } from "@/libs/utils";
 import colors from "@/constants/colors";
@@ -10,6 +17,8 @@ import BoldIcon from "@/assets/icons/editor/bold.svg";
 import ItalicIcon from "@/assets/icons/editor/italic.svg";
 import UnderlineIcon from "@/assets/icons/editor/underline.svg";
 import StrikethroughIcon from "@/assets/icons/editor/strikethrough.svg";
+
+import TooltipArrowIcon from "@/assets/icons/tooltip.svg";
 
 import PublishIcon from "@/assets/icons/publish.svg";
 import UndoIcon from "@/assets/icons/editor/undo.svg";
@@ -143,14 +152,67 @@ interface PublishButtonProps {
 	className?: string;
 }
 
+const FAST_PRESS_PERCENTAGE = 0.2;
+const BUTTON_HOLD_TIME = 2000;
+
 export function PublishButton({ onPress, className }: PublishButtonProps) {
+	const progress = useSharedValue(0);
+	const tooltipProgress = useSharedValue(0);
+
+	const tooltipAnimationStyle = useAnimatedStyle(() => ({
+		opacity: tooltipProgress.value,
+		//transform: [{ translateY: withSpring(tooltipProgress.value * 56) }],
+		top: withSpring(tooltipProgress.value * 56),
+	}));
+
+	const onFastPress = useCallback(() => {
+		if (tooltipProgress.value === 0) {
+			// Prevents multiple animationsw
+			tooltipProgress.value = withTiming(1, {
+				duration: 200,
+			});
+
+			setTimeout(() => {
+				tooltipProgress.value = withTiming(0, {
+					duration: 200,
+				});
+			}, 2000);
+		}
+	}, []);
+
 	return (
-		<RectButton className={"rounded-lg"} onPress={onPress}>
+		<Pressable
+			className={cn("flex flex-1 rounded-lg relative", className)}
+			onPressIn={() => {
+				progress.value = withTiming(1, {
+					duration: BUTTON_HOLD_TIME,
+				});
+			}}
+			onPressOut={() => {
+				//console.log("press out.");
+				const progressValueWhenReleased = progress.value;
+
+				progress.value = withSpring(0, {
+					damping: 15,
+					stiffness: 150,
+				});
+
+				if (progressValueWhenReleased < FAST_PRESS_PERCENTAGE)
+					onFastPress();
+			}}
+			android_ripple={{
+				color: colors.dark.primary[100],
+			}}
+			onLongPress={() => {
+				//console.log("long press.");
+				onPress?.();
+			}}
+			delayLongPress={BUTTON_HOLD_TIME}
+		>
 			<Container
-				className={cn(
-					"flex flex-row items-center justify-center rounded-lg px-10 py-4 landscape:py-2 gap-4 bg-transparent",
-					className
-				)}
+				className={
+					"flex flex-row items-center justify-center rounded-lg px-10 py-4 landscape:py-2 gap-4 bg-transparent"
+				}
 			>
 				<PublishIcon
 					color={`rgb(${colors.dark.neutral})`}
@@ -159,6 +221,30 @@ export function PublishButton({ onPress, className }: PublishButtonProps) {
 				/>
 				<Text>Publicar</Text>
 			</Container>
-		</RectButton>
+			<Animated.View
+				className="flex h-full w-full absolute rounded-lg bg-primary scale-x-0 -z-10"
+				style={{
+					transform: [
+						{
+							scaleX: progress,
+						},
+					],
+					transformOrigin: "left",
+				}}
+			/>
+			<View className="flex h-full w-full absolute rounded-lg bg-200 -z-20" />
+			<Animated.View
+				className="flex items-center justify-center w-full absolute rounded-lg border border-default z-20"
+				style={[tooltipAnimationStyle]}
+			>
+				<TooltipArrowIcon className="absolute -top-2.5 left-1/2 -z-20" />
+				<View className="flex-1 px-4 py-2.5">
+					<Text className="text-xs">
+						Pressione e segure para publicar!
+					</Text>
+				</View>
+				<View className="flex h-full w-full absolute rounded-lg bg-primary -z-20" />
+			</Animated.View>
+		</Pressable>
 	);
 }

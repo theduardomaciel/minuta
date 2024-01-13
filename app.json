@@ -4,9 +4,9 @@
 		"slug": "minuta",
 		"version": "0.1.0",
 		"orientation": "portrait",
+		"scheme": "minuta",
+		"userInterfaceStyle": "dark",
 		"icon": "./assets/images/icon.png",
-		"scheme": "myapp",
-		"userInterfaceStyle": "automatic",
 		"splash": {
 			"image": "./assets/images/splash.png",
 			"resizeMode": "contain",
@@ -50,9 +50,6 @@
 			"typedRoutes": true
 		},
 		"extra": {
-			"router": {
-				"origin": false
-			},
 			"eas": {
 				"projectId": "5b9bd1a4-52f5-4aec-b467-727be2fa1546"
 			}

@@ -14,10 +14,7 @@
 			}
 		},
 		"preview": {
-			"distribution": "internal",
-			"env": {
-				"ATLAS_APP_ID": "application-0-uwcgf"
-			}
+			"distribution": "internal"
 		},
 		"production": {}
 	},

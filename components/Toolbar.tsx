@@ -1,5 +1,5 @@
-import { useCallback, type RefObject } from "react";
-import { Pressable, View } from "react-native";
+import { useCallback, type RefObject, useReducer, useEffect } from "react";
+import { ActivityIndicator, Pressable, View } from "react-native";
 
 import Animated, {
 	useAnimatedStyle,
@@ -29,21 +29,86 @@ import { RichEditor, actions } from "react-native-pell-rich-editor";
 
 // Types
 import type { SvgProps } from "react-native-svg";
-import type { State } from "./Editor";
 
 interface ToolbarProps {
 	editor: RefObject<RichEditor>;
-	state: State;
 	className?: string;
 	toolbarButtonClassName?: ToolbarButtonProps["className"];
+	hideHistory?: boolean;
+}
+
+type ToolbarAction = "bold" | "italic" | "underline" | "strikeThrough";
+
+interface Action {
+	type: ToolbarAction;
+	payload: boolean;
+}
+
+type State = {
+	[key in ToolbarAction]: boolean;
+};
+
+type ItemsOnChange = (
+	| string
+	| {
+			type: string;
+			value: string;
+	  }
+)[];
+
+function reducer(state: State, action: Action) {
+	return {
+		...state,
+		[action.type]: action.payload,
+	};
 }
 
 export default function Toolbar({
 	editor,
-	state,
 	className,
 	toolbarButtonClassName,
+	hideHistory,
 }: ToolbarProps) {
+	const [state, dispatch] = useReducer(reducer, {
+		bold: false,
+		italic: false,
+		underline: false,
+		strikeThrough: false,
+	});
+
+	const toggleAction = useCallback(
+		(key: keyof typeof state) => {
+			dispatch({
+				type: key,
+				payload: !state[key],
+			});
+			editor.current?.sendAction(
+				key, // exemple: "actions.setBold"
+				"result",
+				!state[key]
+			);
+		},
+		[state]
+	);
+
+	const onChange = useCallback((items: ItemsOnChange) => {
+		/* console.log(
+				"Toolbar click, selected items (insert end callback):",
+				items.filter((item) => Object.keys(state).includes(item as any))
+			); */
+
+		Object.keys(state).forEach((key) => {
+			dispatch({
+				type: key as any,
+				payload: items.includes(key),
+			});
+		});
+	}, []);
+
+	/* useEffect(() => {
+		editor.current?.registerToolbar(onChange);
+	}, []); */
+
 	return (
 		<View
 			className={cn(
@@ -63,18 +128,18 @@ export default function Toolbar({
 							icon={value}
 							isToggled={state[key as keyof typeof state]}
 							className={toolbarButtonClassName}
-							onPress={() => {
-								editor.current?.sendAction(
-									key, // exemple: "actions.setBold"
-									"result",
-									!state[key as keyof typeof state]
-								);
-							}}
+							onPress={() =>
+								toggleAction(key as keyof typeof state)
+							}
 						/>
 					);
 				})}
 			</View>
-			<View className="flex flex-row items-center justify-end">
+			<View
+				className={cn("flex flex-row items-center justify-end", {
+					"max-lg:hidden": hideHistory,
+				})}
+			>
 				<ToolbarButton
 					key={"undo"}
 					icon={UndoIcon}
@@ -147,15 +212,20 @@ const ICONS = {
 	strikeThrough: StrikethroughIcon,
 };
 
-interface PublishButtonProps {
-	onPress?: () => void;
-	className?: string;
-}
-
 const FAST_PRESS_PERCENTAGE = 0.2;
 const BUTTON_HOLD_TIME = 2000;
 
-export function PublishButton({ onPress, className }: PublishButtonProps) {
+interface PublishButtonProps {
+	onPress?: () => void;
+	className?: string;
+	isLoading?: boolean;
+}
+
+export function PublishButton({
+	onPress,
+	className,
+	isLoading,
+}: PublishButtonProps) {
 	const progress = useSharedValue(0);
 	const tooltipProgress = useSharedValue(0);
 
@@ -214,12 +284,21 @@ export function PublishButton({ onPress, className }: PublishButtonProps) {
 					"flex flex-row items-center justify-center rounded-lg px-10 py-4 landscape:py-2 gap-4 bg-transparent"
 				}
 			>
-				<PublishIcon
-					color={`rgb(${colors.dark.neutral})`}
-					width={18}
-					height={18}
-				/>
-				<Text>Publicar</Text>
+				{isLoading ? (
+					<ActivityIndicator
+						size="small"
+						color={`rgb(${colors.dark.neutral})`}
+					/>
+				) : (
+					<>
+						<PublishIcon
+							color={`rgb(${colors.dark.neutral})`}
+							width={18}
+							height={18}
+						/>
+						<Text>Publicar</Text>
+					</>
+				)}
 			</Container>
 			<Animated.View
 				className="flex h-full w-full absolute rounded-lg bg-primary scale-x-0 -z-10"

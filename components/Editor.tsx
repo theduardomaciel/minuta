@@ -2,25 +2,21 @@ import React, {
 	useCallback,
 	useEffect,
 	useMemo,
-	useReducer,
 	useRef,
 	useState,
 } from "react";
 import {
 	ColorSchemeName,
-	Dimensions,
 	Keyboard,
 	KeyboardAvoidingView,
 	NativeScrollEvent,
 	NativeSyntheticEvent,
 	ScrollView,
 	View,
-	useWindowDimensions,
 } from "react-native";
 import { cssInterop, useColorScheme } from "nativewind";
 import {
 	actions,
-	FONT_SIZE,
 	getContentCSS,
 	RichEditor,
 } from "react-native-pell-rich-editor";
@@ -30,15 +26,18 @@ import { StatusBar } from "expo-status-bar";
 
 // Components
 import Toolbar, { PublishButton } from "./Toolbar";
-import { Container, DefaultSafeAreaView, Text } from "./Themed";
-import { TextInput } from "react-native";
+import { Container, DefaultSafeAreaView } from "./Themed";
 import Animated, {
 	ReduceMotion,
 	useSharedValue,
 	withSpring,
 } from "react-native-reanimated";
-import { cn } from "@/libs/utils";
-import { SpringConfig } from "react-native-reanimated/lib/typescript/reanimated2/animation/springUtils";
+
+// Hooks
+import { useThoughtManager } from "@/hooks/data/useThoughtManager";
+
+// Types
+import type { SpringConfig } from "react-native-reanimated/lib/typescript/reanimated2/animation/springUtils";
 
 const initHTML = ``;
 
@@ -63,24 +62,6 @@ function createContentStyle(theme: ColorSchemeName) {
 	return contentStyle;
 }
 
-type ToolbarAction = "bold" | "italic" | "underline" | "strikeThrough";
-
-interface Action {
-	type: ToolbarAction;
-	payload: boolean;
-}
-
-export type State = {
-	[key in ToolbarAction]: boolean;
-};
-
-function reducer(state: State, action: Action) {
-	return {
-		...state,
-		[action.type]: action.payload,
-	};
-}
-
 const springConfig: SpringConfig = {
 	duration: 215,
 	dampingRatio: 1.5,
@@ -96,6 +77,7 @@ export default function Editor() {
 	const scrollRef = useRef<ScrollView>(null);
 
 	// Save html to content ref
+	const { addThought } = useThoughtManager();
 	const contentRef = useRef(initHTML);
 
 	const { colorScheme } = useColorScheme();
@@ -104,21 +86,14 @@ export default function Editor() {
 		[colorScheme]
 	);
 
-	const [state, dispatch] = useReducer(reducer, {
-		bold: false,
-		italic: false,
-		underline: false,
-		strikeThrough: false,
-	});
-
-	const [disabled, setDisable] = useState(false);
+	const [disabled, setDisabled] = useState(false);
 
 	// on save to preview
 	const handleSave = useCallback(() => {
-		/* navigation.push("preview", {
-			html: contentRef.current,
-			css: getContentCSS(),
-		}); */
+		addThought(contentRef.current);
+
+		// html: contentRef.current
+		// css: getContentCSS()
 	}, []);
 
 	// Handles editor data change
@@ -145,23 +120,6 @@ export default function Editor() {
 		},
 		[isKeyboardVisible]
 	);
-
-	const editorInitializedCallback = useCallback(() => {
-		console.log("Editor initialized.");
-		richText.current?.registerToolbar(function (items) {
-			/* console.log(
-				"Toolbar click, selected items (insert end callback):",
-				items.filter((item) => Object.keys(state).includes(item as any))
-			); */
-
-			Object.keys(state).forEach((key) => {
-				dispatch({
-					type: key as any,
-					payload: items.includes(key),
-				});
-			});
-		});
-	}, []);
 
 	const onKeyboardHide = useCallback(() => {
 		//console.log("Keyboard hide");
@@ -210,8 +168,11 @@ export default function Editor() {
 			>
 				{/* Header */}
 				<View className="flex flex-row items-center justify-between w-full">
-					<Toolbar editor={richText} state={state} />
-					<PublishButton className="max-lg:hidden portrait:hidden" />
+					<Toolbar editor={richText} hideHistory />
+					<PublishButton
+						className="max-lg:hidden portrait:hidden"
+						onPress={handleSave}
+					/>
 				</View>
 				<Container className="w-full p-6 lg:p-12 min-h-[55vh] rounded-2xl flex-1">
 					<RichEditor
@@ -230,16 +191,19 @@ export default function Editor() {
 						initialContentHTML={initHTML}
 						onChange={handleChange}
 						onCursorPosition={handleCursorPosition}
-						editorInitializedCallback={editorInitializedCallback}
+						//editorInitializedCallback={editorInitializedCallback}
 						pasteAsPlainText={true}
 					/>
 				</Container>
-				<PublishButton className="lg:hidden w-full" />
+				<PublishButton
+					className="lg:hidden w-full"
+					onPress={handleSave}
+				/>
 				<Link
 					href={`/`}
 					className="flex opacity-70 text-base web:landscape:text-sm hover:underline -z-10 text-neutral"
 				>
-					escrevendo como @meninocoiso
+					voltar para o início
 				</Link>
 			</ScrollView>
 			<KeyboardAvoidingView
@@ -257,7 +221,6 @@ export default function Editor() {
 				>
 					<Toolbar
 						editor={richText}
-						state={state}
 						className="gap-0 h-full"
 						toolbarButtonClassName="rounded-none h-full border-t-0 border-b-0 border-l-0 border-r p-4"
 					/>
@@ -267,26 +230,3 @@ export default function Editor() {
 		</DefaultSafeAreaView>
 	);
 }
-
-// Handles editor height change
-/* const handleHeightChange = useCallback((height: number) => {
-	console.log("Editor height change:", height);
-}, []);
-
-const handlePaste = useCallback((data: any) => {
-	console.log("Paste:", data);
-}, []);
-
-const handleInput = useCallback(() => {}, []);
-
-const [isFocused, setFocused] = useState(false);
-const handleFocus = useCallback(() => {
-	console.log("The editor has been focused.");
-	setFocused(true);
-}, []);
-
-const handleBlur = useCallback(() => {
-	console.log("The editor has been blurred.");
-	setFocused(false);
-}, []);
- */

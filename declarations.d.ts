@@ -5,4 +5,6 @@ declare module "*.svg" {
 	export default content;
 }
 
-declare module "react-native-aztec";
+declare module "@env" {
+	export const ATLAS_APP_ID: string;
+}

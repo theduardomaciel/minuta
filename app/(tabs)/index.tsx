@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo } from "react";
 import { View } from "react-native";
 
 import { FlashList } from "@shopify/flash-list";
@@ -23,7 +23,9 @@ import PostPreview from "@/components/PostPreview";
 // Assets
 import AddIcon from "@/assets/icons/add.svg";
 import TimelineDot from "@/assets/timeline-dot.svg";
-import { LinearGradient } from "expo-linear-gradient";
+
+// Hooks
+import { useThoughtManager } from "@/hooks/data/useThoughtManager";
 
 interface Post {
 	index: number;
@@ -61,27 +63,39 @@ const DATA: (string | Post)[] = [
 	},
 ];
 
-const DATA_LENGTH = DATA.filter((i) => typeof i !== "string").length;
-
-function MobileWrapper({ children }: { children: React.ReactNode }) {
-	return (
-		<LinearGradient
-			colors={[
-				`rgb(${colors.dark.background[100]})`,
-				`rgb(${colors.dark.background[300]})`,
-			]}
-		>
-			{children}
-		</LinearGradient>
-	);
-}
-
-function WebWrapper({ children }: { children: React.ReactNode }) {
-	return <>{children}</>;
-}
-
 export default function ProfileScreen() {
-	const [hasLoaded, setHasLoaded] = useState(false);
+	//const [hasLoaded, setHasLoaded] = useState(false);
+
+	const { thoughts } = useThoughtManager();
+
+	const DATA = useMemo(() => {
+		const data: (string | Post)[] = [];
+
+		thoughts.forEach((thought, index) => {
+			const date = new Date(thought.createdAt);
+
+			const isNewYear =
+				index === 0 ||
+				date.getFullYear() !==
+					new Date(thoughts[index - 1].createdAt).getFullYear();
+
+			if (isNewYear) {
+				data.push(`//${date.getFullYear()}`);
+			}
+
+			data.push({
+				index: index + 1,
+				preview: thought.content,
+				id: thought._id.toString(),
+			});
+		});
+
+		return data;
+	}, [thoughts]);
+
+	console.log(DATA);
+
+	const DATA_LENGTH = DATA.filter((i) => typeof i !== "string").length;
 
 	return (
 		<DefaultSafeAreaView>
@@ -96,7 +110,7 @@ export default function ProfileScreen() {
 				{/* Header */}
 				<View className="flex flex-col w-full items-center justify-start gap-4">
 					<Container className={"w-full gap-9 p-9"}>
-						<Text className="text-lg">@meninocoiso</Text>
+						<Text className="text-lg">@theduardomaciel</Text>
 						<View className="flex landscape:web:grid web:grid-cols-3 flex-col landscape:flex-row items-start justify-center gap-4 w-full">
 							<Text className="portrait:text-left landscape:text-center">
 								255 posts
@@ -131,7 +145,7 @@ export default function ProfileScreen() {
 					</View>
 					<FlashList
 						data={DATA}
-						onLoad={() => setHasLoaded(true)}
+						ListEmptyComponent={<Text>A lista está vazia.</Text>}
 						renderItem={({ item, index }) => {
 							if (typeof item === "string") {
 								const isNewYear = item.includes("//");

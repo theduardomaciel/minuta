@@ -11,6 +11,6 @@
 		"**/*.tsx",
 		".expo/types/**/*.ts",
 		"expo-env.d.ts",
-		"libs/syncPointer.js"
+		"nativewind-env.d.ts"
 	]
 }

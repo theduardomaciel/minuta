@@ -4,7 +4,7 @@ import { Container, Text, RectButton } from "./Themed";
 import { cn } from "@/libs/utils";
 
 interface Props {
-	id: string;
+	id: any;
 	preview: string;
 	isLast?: boolean;
 	className?: string;
@@ -26,6 +26,9 @@ export default function PostPreview({
 		? preview.slice(0, MAX_PREVIEW_LENGTH) + "..."
 		: preview;
 
+	console.log(typeof preview, typeof id, isLast, className, style);
+	console.log("Testando essas coisas.");
+
 	return (
 		<Container
 			className={cn(
@@ -40,14 +43,14 @@ export default function PostPreview({
 			]}
 		>
 			<RectButton className="flex-col justify-start gap-4 p-6 w-full">
-				<Text className="text-sm w-full">{TRUNCATED_TEXT}</Text>
+				<Text className="text-sm w-full">teste</Text>
 				<View className="flex flex-col landscape:flex-row w-full items-start justify-start landscape:justify-between gap-2">
 					{IS_TRUNCATED && (
 						<Text className="text-sm font-bold group-hover:underline">
 							Ler mais
 						</Text>
 					)}
-					<Text className="opacity-50">#{id}</Text>
+					<Text className="opacity-50">#teste2</Text>
 				</View>
 			</RectButton>
 		</Container>
